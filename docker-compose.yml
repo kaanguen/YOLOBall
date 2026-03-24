@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  yoloball:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: yoloball:latest
+    container_name: yoloball_tracker
+    ports:
+      - "8000:8000/udp"
+      - "8001:8001/udp"
+    volumes:
+      - ./input.mp4:/app/input.mp4:ro
+      - ./outputs:/app/outputs
+    environment:
+      - PYTHONUNBUFFERED=1
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

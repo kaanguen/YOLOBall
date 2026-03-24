@@ -2,6 +2,8 @@
 #
 # Get latest from https://github.com/github/gitignore/blob/main/Unity.gitignore
 #
+
+# Unity Build/Generated files
 .utmp/
 /[Ll]ibrary/
 /[Tt]emp/
@@ -11,6 +13,15 @@
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
 *.log
+
+# Futbol Analysis Manager - Unity Project
+/Futbol\ Analysis\ Manager/[Ll]ibrary/
+/Futbol\ Analysis\ Manager/[Tt]emp/
+/Futbol\ Analysis\ Manager/[Oo]bj/
+/Futbol\ Analysis\ Manager/[Bb]uild/
+/Futbol\ Analysis\ Manager/[Ll]ogs/
+/Futbol\ Analysis\ Manager/[Uu]ser[Ss]ettings/
+/Futbol\ Analysis\ Manager/*.log
 
 # By default unity supports Blender asset imports, *.blend1 blender files do not need to be commited to version control.
 *.blend1
@@ -97,3 +108,44 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Output files (temporär, werden ignoriert)
+outputs/
+
+# Docker
+.docker/
+docker-compose.override.yml
