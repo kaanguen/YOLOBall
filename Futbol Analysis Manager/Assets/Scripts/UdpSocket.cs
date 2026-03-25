@@ -33,31 +33,11 @@ public class UdpSocket : MonoBehaviour
     IPEndPoint remoteEndPoint;
     Thread receiveThread; // Receiving Thread
 
+
+    PlayerPlacing playerPlacing;
     PythonTest pythonTest;
 
 
-    //IEnumerator SendDataCoroutine() // DELETE THIS: Added to show sending data from Unity to Python via UDP
-    //{
-    //    while (true)
-    //    {
-    //        SendData("Sent from Unity: " + i.ToString());
-    //        i++;
-    //        yield return new WaitForSeconds(1f);
-    //    }
-    //}
-
-    public void SendData(string message) // Use to send data to Python
-    {
-        try
-        {
-            byte[] data = Encoding.UTF8.GetBytes(message);
-            client.Send(data, data.Length, remoteEndPoint);
-        }
-        catch (Exception err)
-        {
-            print(err.ToString());
-        }
-    }
 
     void Awake()
     {
@@ -81,39 +61,83 @@ public class UdpSocket : MonoBehaviour
 
     private void Start() 
     {
-        pythonTest = FindObjectOfType<PythonTest>(); // Instead of using a public variable
+        pythonTest = FindFirstObjectByType<PythonTest>(); 
+        playerPlacing = FindFirstObjectByType<PlayerPlacing>();
     }
 
     // Receive data, update packets received
-    private void ReceiveData()
+private string lastJsonData = "";
+private bool hasNewData = false;
+private readonly object lockObject = new object(); // Für die Sicherheit
+
+private void ReceiveData()
+{
+    while (true)
     {
-        while (true)
+        try
         {
-            try
+            IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, 0);
+            byte[] data = client.Receive(ref anyIP);
+            string text = Encoding.UTF8.GetString(data);
+
+            lock (lockObject)
             {
-                IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, 0);
-                byte[] data = client.Receive(ref anyIP);
-                string text = Encoding.UTF8.GetString(data);
-                print(">> " + text);
-                ProcessInput(text);
+                lastJsonData = text;
+                hasNewData = true;
             }
-            catch (Exception err)
-            {
-                print(err.ToString());
-            }
+            
+            print("Daten empfangen..."); 
+        }
+        catch (Exception err)
+        {
+            print("UDP Error: " + err.ToString());
         }
     }
+}
+
+void Update()
+{
+    if (hasNewData)
+    {
+        string jsonToProcess = "";
+        
+        lock (lockObject)
+        {
+            jsonToProcess = lastJsonData;
+            hasNewData = false;
+        }
+
+        ProcessInput(jsonToProcess);
+    }
+}
 
     private void ProcessInput(string input)
     {
-        // PROCESS INPUT RECEIVED STRING HERE
-        pythonTest.UpdatePythonRcvdText(input); // Update text by string received from python
 
-        if (!isTxStarted) // First data arrived so tx started
+    try 
+    {
+        FramePacket packet = JsonUtility.FromJson<FramePacket>(input);
+        
+        if (packet != null && packet.players != null)
         {
-            isTxStarted = true;
+         
+            if(playerPlacing != null)
+            {
+                playerPlacing.ProcessFrame(packet);
+            }
         }
     }
+    catch (Exception e)
+    {
+        Debug.LogWarning("JSON Parse Fehler: " + e.Message);
+    }
+
+    if (!isTxStarted)
+    {
+        isTxStarted = true;
+    }
+}
+    
 
     //Prevent crashes - close clients and threads properly!
     void OnDisable()

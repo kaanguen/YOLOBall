@@ -13,6 +13,7 @@ services:
     volumes:
       - ./input.mp4:/app/input.mp4:ro
       - ./outputs:/app/outputs
+      - ./src:/app/src:ro  
     environment:
       - PYTHONUNBUFFERED=1
     extra_hosts:

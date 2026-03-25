@@ -23,16 +23,16 @@ public class PythonTest : MonoBehaviour
         tempStr = str;
     }
 
-    public void SendToPython()
-    {
-        udpSocket.SendData("Sent From Unity: " + numToSendToPython.ToString());
-        numToSendToPython++;
-        sendToPythonText.text = "Send Number: " + numToSendToPython.ToString();
-    }
+    // public void SendToPython()
+    // {
+    //     udpSocket.SendData("Sent From Unity: " + numToSendToPython.ToString());
+    //     numToSendToPython++;
+    //     sendToPythonText.text = "Send Number: " + numToSendToPython.ToString();
+    // }
 
     private void Start()
     {
-        udpSocket = FindObjectOfType<UdpSocket>();
+        udpSocket = FindFirstObjectByType<UdpSocket>();
         sendToPythonText.text = "Send Number: " + numToSendToPython.ToString();
     }
 

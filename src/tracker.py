@@ -37,8 +37,11 @@ def detectBoxes(model, cap, out, sock, output_path):
         
         frame_count += 1
         
-        # Tracking Logik
-        results = model.track(frame, persist=True, classes=[0, 32], conf=0.3, device='cpu') 
+        # Tracking Logic
+        results = model.track(frame, persist=True, classes=[0, 32], conf=0.3, device='cuda:0') 
+
+        
+        frame_players = []
 
         for result in results:
             if result.boxes is None or result.boxes.id is None:
@@ -51,27 +54,46 @@ def detectBoxes(model, cap, out, sock, output_path):
             for box, obj_id, cls in zip(boxes, ids, clss):
                 x1, y1, x2, y2 = box
                 
-
+                # Cordinates
                 pos_x = (x1 + x2) / 2
                 pos_z = y2
-               
-    
-                # Senden
-                network.send_tracking_data(sock, int(obj_id), int(cls), pos_x, pos_z)
 
-                # Zeichnen für das Debug-Video
+                #TODO: Homographie from 2D point to 3D point
+                
+                
+                player_data = {
+                    "id": int(obj_id),
+                    "class": int(cls),
+                    "x": round(float(pos_x), 2),
+                    "z": round(float(pos_z), 2)
+                }
+                frame_players.append(player_data)
+
+                
+              
                 color = (0, 255, 0) if cls == 0 else (0, 0, 255)
                 cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), color, 2)
 
+        # send all player pro frame
+        if frame_players:
+            network.send_frame_data(sock, frame_players)
+
+       
         out.write(frame)
+       
 
     cap.release()
     out.release()
-    print(f"\n Video gespeichert: {output_path}")
+    print(f"\nVideo gespeichert: {output_path}")
 
 
 
-# --- DER STARTPUNKT ---
+    
+        
+
+
+
+
 if __name__ == "__main__":
     
     m, c, o, s, path = setup()
