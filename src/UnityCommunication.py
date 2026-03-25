@@ -2,7 +2,7 @@ import UdpComms as U
 import json
 
 def get_udp_socket():
-    # Dein Trick für Docker
+    
     sock = U.UdpComms(udpIP="0.0.0.0", portTX=8000, portRX=8001, enableRX=False, suppressWarnings=True)
     sock.udpIP = "host.docker.internal"
     return sock

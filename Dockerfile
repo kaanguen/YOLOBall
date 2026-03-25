@@ -13,9 +13,10 @@ COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Pre-download the YOLOv8 model during build to avoid runtime delays
+
 RUN python -c "from ultralytics import YOLO; YOLO('yolov8n.pt')"
 
 COPY . .
 
-CMD ["python", "tracker.py"]
+CMD ["python", "src/tracker.py"]
+

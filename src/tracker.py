@@ -54,7 +54,7 @@ def detectBoxes(model, cap, out, sock, output_path):
 
                 pos_x = (x1 + x2) / 2
                 pos_z = y2
-                # Datenpaket (Hier später Homographie statt Pixel!)
+               
     
                 # Senden
                 network.send_tracking_data(sock, int(obj_id), int(cls), pos_x, pos_z)
